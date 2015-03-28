@@ -18,10 +18,6 @@ def text_cleaner(text, prefix):
     return text.rstrip(' ').lstrip(' ')
 
 
-def text_encode(text):
-    return text.encode('utf-8')
-
-
 class Search(object):
     def __init__(self, api):
         self._api = api
@@ -39,10 +35,9 @@ class Search(object):
                 cursor = tweepy.Cursor(self._api.search, q=text, rpp=1)
 
                 for c in cursor.items(1):
-                    uname = text_encode(c.author.name)
-                    ctext = text_encode(c.text)
-                    f = text_encode('@{0}: {1}')
-                    return f.format(uname, ctext)
+                    uname = c.author.name
+                    ctext = c.text
+                    return '@{0}: {1}'.format(uname, ctext)
 
                 else:
                     return 'No results.'
@@ -88,7 +83,7 @@ class User(object):
 
             try:
                 user = self._api.get_user(text)
-                return text_encode(user.status.text)
+                return user.status.text
             except tweepy.TweepError, e:
                 print e
                 return 'No user by that name.'
@@ -116,7 +111,7 @@ class Url(object):
 
             status = self._api.get_status(self._id)
             self._id = None
-            return text_encode(status.text)
+            return status.text
 
         except tweepy.TweepError, e:
             self._id = None
@@ -144,9 +139,3 @@ class Plugin(BasePlugin):
             if m.match(text):
                 rtext = m.process(text).replace('\r', '').replace('\n', ' ')
                 msg.reply(rtext)
-                #lines = rtext.split('\n')
-                #for line in lines:
-                #    msg.reply(line)
-                #return
-            #msg.reply('{0}'.format(user.name))
-    

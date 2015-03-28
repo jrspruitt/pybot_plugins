@@ -20,10 +20,6 @@ def get_json(url, user, repo):
     return r.json()
 
 
-def text_encode(text):
-    return text.encode('utf-8')
-
-
 class Plugin(BasePlugin):
     @hook
     def privmsg_command(self, msg):
@@ -49,7 +45,7 @@ class Plugin(BasePlugin):
             if not rinfo:
                 return
 
-            desc = text_encode(rinfo['description'])
+            desc = rinfo['description']
             msg.reply(desc)
             return
 
@@ -59,8 +55,7 @@ class Plugin(BasePlugin):
             if not commits:
                 return
 
-            fcommit = text_encode(commits[0]['commit']['message'])
-            msg.reply(text_encode('Last commit:{0}').format(fcommit))
+            msg.reply('Last commit:{0}'.format(commits[0]['commit']['message']))
         except Exception, e:
             print e
             return

@@ -73,7 +73,7 @@ class Plugin(BasePlugin):
             text_len = len(text)
             line_len = 386 
             for i in xrange(0, text_len, line_len):
-                msg.reply(text[i:i+line_len].encode('utf-8'))
+                msg.reply(text[i:i+line_len])
 
             if self._api['total']:
                 msg.reply('Total Results:%s' % (len(content))) 

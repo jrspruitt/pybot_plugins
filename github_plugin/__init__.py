@@ -7,7 +7,7 @@ import re
 
 from plugin import *
 
-regx = re.compile(r'^https?://(www\.)?github.com/(?P<user>[a-zA-Z0-9_\-]+)/(?P<repo>[a-zA-Z0-9_\-]+)/?.*$')
+regx = re.compile(r'^https?://(www\.)?github.com/(?P<user>[a-zA-Z0-9_\-]+)/(?P<repo>[a-zA-Z0-9_\-]+)/?$')
 url_base = 'https://api.github.com/repos/{user}/{repo}'
 url_commits = '{0}/commits'.format(url_base)
 

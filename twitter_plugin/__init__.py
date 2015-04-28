@@ -4,7 +4,9 @@
 import re
 import config
 import random
+import requests
 import tweepy
+from HTMLParser import HTMLParser
 
 from plugin import *
 
@@ -17,6 +19,24 @@ def text_cleaner(text, prefix):
     text =  text.replace(prefix, '')
     return text.rstrip(' ').lstrip(' ')
 
+def tweet_cleaner(text):
+    hp = HTMLParser()
+    return hp.unescape(text.replace('\n', ' ').replace('\r', ''))
+
+def url_expander(sentence, msg):
+    regex_tco = re.compile(r'https?://t.co/.*')
+    urls = []
+    words = sentence.split()
+
+    for word in words:
+        m = re.match(regex_tco, word)
+
+        if m:
+            idx = words.index(word)
+            r = requests.get(word)
+
+            if r.status_code in [200, 301, 302]:
+                msg.reply(r.url)
 
 class Search(object):
     def __init__(self, api):
@@ -29,22 +49,25 @@ class Search(object):
         else:
             return False
 
-    def process(self, text):
-            try:
-                text = text_cleaner(text, self._prefix)
-                cursor = tweepy.Cursor(self._api.search, q=text, rpp=1)
+    def process(self, text, msg):
+        try:
+            text = text_cleaner(text, self._prefix)
+            cursor = tweepy.Cursor(self._api.search, q=text, rpp=1)
 
-                for c in cursor.items(1):
-                    uname = c.author.name
-                    ctext = c.text
-                    return '@{0}: {1}'.format(uname, ctext)
+            for c in cursor.items(1):
+                uname = c.author.name
+                msg.reply(u'@{0}: {1}'.format(uname, tweet_cleaner(c.text)))
+                url_expander(c.text, msg)
+                break
 
-                else:
-                    return 'No results.'
+            else:
+                msg.reply('No results.')
 
-            except tweepy.TweepError, e:
-                print e
-                return 'Update failed.'
+        except tweepy.TweepError, e:
+            print e
+            msg.reply('Update failed.')
+
+        return
 
 
 class Post(object):
@@ -58,15 +81,16 @@ class Post(object):
         else:
             return False
 
-    def process(self, text):
-            try:
-                text = text_cleaner(text, self._prefix)
-                self._api.update_status(status=text)
-                return 'Updated.'
-            except tweepy.TweepError, e:
-                print e
-                return 'Update failed.'
+    def process(self, text, msg):
+        try:
+            text = text_cleaner(text, self._prefix)
+            self._api.update_status(status=text)
+            msg.reply('Updated.')
+        except tweepy.TweepError, e:
+            print e
+            msg.reply('Update failed.')
 
+        return
 
 class User(object):
     def __init__(self, api):
@@ -78,16 +102,18 @@ class User(object):
         else:
             return False
 
-    def process(self, text):
-            text =  text_cleaner(text, 'twitter user')
+    def process(self, text, msg):
+        text =  text_cleaner(text, 'twitter user')
 
-            try:
-                user = self._api.get_user(text)
-                return user.status.text
-            except tweepy.TweepError, e:
-                print e
-                return 'No user by that name.'
+        try:
+            user = self._api.get_user(text)
+            msg.reply(tweet_cleaner(user.status.text))
+            url_expander(user.status.text, msg)
+        except tweepy.TweepError, e:
+            print e
+            msg.reply('No user by that name.')
 
+        return
 
 class Url(object):
     def __init__(self, api):
@@ -104,18 +130,21 @@ class Url(object):
             self._id = m.group('id')
             return True
 
-    def process(self, text):
+    def process(self, text, msg):
         try:
             if not self._id:
                 return 'Bad ID.'
 
             status = self._api.get_status(self._id)
             self._id = None
-            return status.text
+            msg.reply(tweet_cleaner(status.text))
+            url_expander(status.text, msg)
 
         except tweepy.TweepError, e:
             self._id = None
-            return 'No Status for that ID.'
+            msg.reply('No Status for that ID.')
+
+        return
 
 
 class Plugin(BasePlugin):
@@ -137,5 +166,4 @@ class Plugin(BasePlugin):
 
         for m in self._mods:
             if m.match(text):
-                rtext = m.process(text).replace('\r', '').replace('\n', ' ')
-                msg.reply(rtext)
+                m.process(text, msg)

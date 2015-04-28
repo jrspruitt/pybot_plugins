@@ -6,6 +6,7 @@ import socket
 import dns
 import dns.resolver
 import dns.reversename
+import requests
 from geoip import geolite2
 from plugin import *
 
@@ -421,7 +422,69 @@ class Pgeoip(object):
         return
 
 
-#bGeneric helpers
+class Redirects(object):
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def help():
+        return 'Usage: redirects <domain.name> Returns list of urls.'
+
+    @staticmethod
+    def match(arg):
+        if arg.startswith('redirects'):
+            return True
+        return False
+
+    @staticmethod
+    def _get_args(message):
+        args = {}
+        cargs = message.split(' ')
+        args['dn'] = None
+
+        if is_dn(re.sub(r'https?://', '', cargs[1], flags=re.IGNORECASE)):
+            args['dn'] = cargs[1]
+
+        return args
+
+    def process(self, msg):
+        message = re.sub(' {2,}', '', msg.param[-1])
+
+        if message.startswith('geoip help'):
+            msg.reply(self.help())
+            return
+
+        args = self._get_args(message)
+
+        if args['dn'] is None:
+            msg.reply('No domain name or bad name specified')
+            return
+        try:
+            r = requests.get(args['dn'])
+
+            if r.status_code not in [200, 301, 302]:
+                msg.reply('URL did not resolve.')
+
+            elif r.status_code == 403:
+                msg.reply('Access forbidden.')
+
+            if r.history:
+                for rq in r.history:
+                    msg.reply('{0}: {1}'.format(rq.status_code, rq.url))
+
+            msg.reply('{0}: {1}'.format(r.status_code, r.url))
+
+        except requests.TooManyRedirects, e:
+            msg.reply('Too many redirects.')
+
+        except Exception, e:
+            msg.reply('Error: {0}'.format(e))
+
+        return
+
+
+
+#Generic helpers
 def googlemap_url(lat, lon):
     fstr = 'http://maps.google.com/?ie=UTF8&q={0:.5f},' \
            '{1:.5f}&hq=&ll={0:.5f},{1:.5f}&z=13'
@@ -454,7 +517,7 @@ class Plugin(BasePlugin):
             msg.reply('Commands: geoip and dig, use <cmd> help, for further info.')
             return
 
-        for cmd in [Dig(), Pgeoip()]:
+        for cmd in [Dig(), Pgeoip(), Redirects()]:
             if cmd.match(msg.param[-1]):
                 cmd.process(msg)
                 return

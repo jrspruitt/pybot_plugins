@@ -359,7 +359,7 @@ class Dig(object):
 
     @staticmethod
     def match(arg):
-        if arg.startswith('dig'):
+        if arg.startswith('dig '):
             return True
         return False
 

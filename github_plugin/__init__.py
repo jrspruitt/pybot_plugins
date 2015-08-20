@@ -46,7 +46,10 @@ class Plugin(BasePlugin):
                 return
 
             desc = rinfo['description']
-            msg.reply(desc)
+            if desc:
+                msg.reply(desc)
+            else:
+                msg.reply("No Description.")
             return
 
             # Can't get here, saving code for later functionality

@@ -281,11 +281,12 @@ class Dig(object):
                 return 'default'
 
     def _get_args(self, message):
-        args = {'rtype':None, 'ns':None, 'ip':None, 'dn':None}
+        args = {'rtype':'A', 'ns':None, 'ip':None, 'dn':None}
         cargs = message.upper().split(' ')
 
         for arg in cargs:
             arg = '{0}'.format(arg)
+
             if arg in self._rtypes:
                 args['rtype'] = arg
 

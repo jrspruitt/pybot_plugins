@@ -176,7 +176,7 @@ class Dig(object):
     @staticmethod
     def _nsec(ans):
         fstr = 'Next:{0} Windows:{1}'
-        return fstr.format(ans.next, ans.windows)
+        return fstr.format(ans.__next__, ans.windows)
 
     @staticmethod
     def _nsec3(ans):
@@ -185,7 +185,7 @@ class Dig(object):
         return fstr.format(ans.alogrith,
                            ans.flags,
                            ans.interations,
-                           ans.next,
+                           ans.__next__,
                            ans.salt,
                            ans.windows)
 
@@ -256,7 +256,7 @@ class Dig(object):
         return fstr.format(' | '.join([rec for rec in self._rtypes]))
 
     def _query(self, url, rtype):
-        print url, rtype
+        print(url, rtype)
         return self._resolver.query(url, rtype)
 
     def dname_to_ip(self, dname):
@@ -276,8 +276,8 @@ class Dig(object):
         elif is_dn(arg):
             try:
                 return self.dname_to_ip(arg)
-            except dns.exception.DNSException, err:
-                print err
+            except dns.exception.DNSException as err:
+                print(err)
                 return 'default'
 
     def _get_args(self, message):
@@ -324,7 +324,7 @@ class Dig(object):
 
             try:
                 res = self.ip_to_dname(args['ip'])
-            except dns.exception.DNSException, err:
+            except dns.exception.DNSException as err:
                 msg.reply(err)
                 return
 
@@ -351,9 +351,9 @@ class Dig(object):
             for ans in answers:
                 msg.reply(self._rtypes[args['rtype']](ans))
 
-        except dns.resolver.NoAnswer, err:
+        except dns.resolver.NoAnswer as err:
             msg.reply('No Answer.')
-        except dns.exception.DNSException, err:
+        except dns.exception.DNSException as err:
             msg.reply(err)
 
         return
@@ -390,8 +390,8 @@ class Pgeoip(object):
         elif is_dn(cargs[1]):
             try:
                 args['ip'] = '{0}'.format(dns.resolver.query(cargs[1], 'A')[0])
-            except dns.resolver.NoAnswer, err:
-                print err
+            except dns.resolver.NoAnswer as err:
+                print(err)
 
         return args
 
@@ -475,10 +475,10 @@ class Redirects(object):
 
             msg.reply('{0}: {1}'.format(r.status_code, r.url))
 
-        except requests.TooManyRedirects, e:
+        except requests.TooManyRedirects as e:
             msg.reply('Too many redirects.')
 
-        except Exception, e:
+        except Exception as e:
             msg.reply('Error: {0}'.format(e))
 
         return

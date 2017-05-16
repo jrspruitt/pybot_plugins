@@ -59,6 +59,6 @@ class Plugin(BasePlugin):
                 return
 
             msg.reply('Last commit:{0}'.format(commits[0]['commit']['message']))
-        except Exception, e:
-            print e
+        except Exception as e:
+            print(e)
             return

@@ -6,7 +6,7 @@ import config
 import random
 import requests
 import tweepy
-from HTMLParser import HTMLParser
+from html.parser import HTMLParser
 
 from plugin import *
 
@@ -56,15 +56,15 @@ class Search(object):
 
             for c in cursor.items(1):
                 uname = c.author.name
-                msg.reply(u'@{0}: {1}'.format(uname, tweet_cleaner(c.text)))
+                msg.reply('@{0}: {1}'.format(uname, tweet_cleaner(c.text)))
                 url_expander(c.text, msg)
                 break
 
             else:
                 msg.reply('No results.')
 
-        except tweepy.TweepError, e:
-            print e
+        except tweepy.TweepError as e:
+            print(e)
             msg.reply('Update failed.')
 
         return
@@ -86,8 +86,8 @@ class Post(object):
             text = text_cleaner(text, self._prefix)
             self._api.update_status(status=text)
             msg.reply('Updated.')
-        except tweepy.TweepError, e:
-            print e
+        except tweepy.TweepError as e:
+            print(e)
             msg.reply('Update failed.')
 
         return
@@ -109,8 +109,8 @@ class User(object):
             user = self._api.get_user(text)
             msg.reply(tweet_cleaner(user.status.text))
             url_expander(user.status.text, msg)
-        except tweepy.TweepError, e:
-            print e
+        except tweepy.TweepError as e:
+            print(e)
             msg.reply('No user by that name.')
 
         return
@@ -140,7 +140,7 @@ class Url(object):
             msg.reply(tweet_cleaner(status.text))
             url_expander(status.text, msg)
 
-        except tweepy.TweepError, e:
+        except tweepy.TweepError as e:
             self._id = None
             msg.reply('No Status for that ID.')
 

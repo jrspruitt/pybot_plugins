@@ -72,7 +72,7 @@ class Plugin(BasePlugin):
             text = content[self._api['idx']].replace('\n', ' ').replace('\r','')
             text_len = len(text)
             line_len = 386 
-            for i in xrange(0, text_len, line_len):
+            for i in range(0, text_len, line_len):
                 msg.reply(text[i:i+line_len])
 
             if self._api['total']:

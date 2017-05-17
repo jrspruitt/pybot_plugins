@@ -2,12 +2,10 @@
 # vim: set ts=4 et
 
 from plugin import *
-import config
 
 import re
 import requests
 
-yt_key = config.youtube_apikey
 yt_url = 'https://www.googleapis.com/youtube/v3/videos?id=%s&key=%s&part=snippet'
 url_re = re.compile(
                     r'^(?:https?://)?(?:www\.)?' + 
@@ -42,7 +40,7 @@ class Plugin(BasePlugin):
             return
 
         try:
-            url = yt_url % (vid, yt_key)
+            url = yt_url % (vid, self.bot.config['youtube']['apikey'])
             r = requests.get(url)
 
             if r.status_code not in [200, 301, 304]:

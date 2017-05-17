@@ -24,10 +24,10 @@ Recognizes Twitter URLs and posts the Tweet text to the channel.
 
 **config.py Changes**
 
-* twitter_apikey = Twitter API Key.
+* apikey = Twitter API Key.
 
-* twitter_secret = Twitter Secret.
+* secret = Twitter Secret.
 
-* twitter_auth_t = Twitter Auth Token.
+* auth_t = Twitter Auth Token.
 
-* twitter_auth_ts = Twitter Auth Token Secret.
+* auth_ts = Twitter Auth Token Secret.

@@ -2,18 +2,12 @@
 # vim: set ts=4 et
 
 import re
-import config
 import random
 import requests
 import tweepy
 from html.parser import HTMLParser
 
 from plugin import *
-
-apik = config.twitter_apikey
-apis = config.twitter_secret
-autht = config.twitter_auth_t
-authts = config.twitter_auth_ts
 
 def text_cleaner(text, prefix):
     text =  text.replace(prefix, '')
@@ -149,6 +143,11 @@ class Url(object):
 
 class Plugin(BasePlugin):
     def on_load(self, reloading):
+        apik = self.bot.config[self.name]['apikey']
+        apis = self.bot.config[self.name]['secret']
+        autht = self.bot.config[self.name]['auth_t']
+        authts = self.bot.config[self.name]['auth_ts']
+        
         auth = tweepy.OAuthHandler(apik, apis)
         auth.set_access_token(autht, authts)
         api = tweepy.API(auth)

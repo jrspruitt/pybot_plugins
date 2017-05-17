@@ -26,4 +26,4 @@ Recognizes Youtube video URLs and posts title text in channel.
 
 **config.py Changes**
 
-* youtube_apikey = Google Youtube API key.
+* apikey = Google Youtube API key.

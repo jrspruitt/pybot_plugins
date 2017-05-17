@@ -28,9 +28,6 @@ class Plugin(BasePlugin):
             msg.reply('URL Parser returns title of Youtube video.')
             return
 
-        if yt_key == '':
-            return
-
         m = url_re.match(text)
         if not m:
             return

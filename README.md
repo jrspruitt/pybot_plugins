@@ -1,7 +1,7 @@
 # Pybot Plugins
 A collection of plugins for the [jkent-pybot](https://github.com/jkent/jkent-pybot) IRC bot.
 
-##Installation##
+##Installation
 
 1. Download *\_plugin directories to pybot/plugins.
 

@@ -1,4 +1,4 @@
-##Github URL Parser##
+##Github URL Parser
 Recognizes Github repo URLs and displays the repo's description in channel.
 
 **Commands:**

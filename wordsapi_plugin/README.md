@@ -35,8 +35,8 @@ A collection of APIs dealing with words, dictionaries, rhymes, thesaurus, etc.
 
 **config.py Changes**
 
-* dict_apikey = dictionaryapi.com Collegiate API key.
+[wordsapi]
 
-* thes_apikey = dictionaryapi.com Thesaurus API key.
-
-* urband_apikey = mashape.com API key.
+* dict_apikey=dictionaryapi.com Collegiate API key.
+* thes_apikey=dictionaryapi.com Thesaurus API key.
+* urband_apikey=mashape.com API key.

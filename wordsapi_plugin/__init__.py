@@ -2,7 +2,6 @@
 # vim: set ts=4 et
 
 from plugin import *
-import config
 
 import re
 from lxml import etree
@@ -11,11 +10,42 @@ import requests
 pattern = re.compile(r'^(?P<cmd>[a-zA-Z]*) (?P<word>[A-Za-z_\- \.]+) ?(?P<idx>\d{0,2})$')
 
 class Plugin(BasePlugin):
-    def __init__(self, _):
+    def on_load(self, reloading):
         self._last_cmd = ''
         self._last_word = ''
         self._last_content = ''
         self._api = {'key':None, 'cmd':None, 'url':'', 'idx': 0, 'word':'', 'total':True}
+
+        self._mdict = {'cmd':'define',
+                'key':self.bot.config.get('wordsapi', 'dict_apikey'),
+                'url':'http://www.dictionaryapi.com/api/v1/references/collegiate/xml/{word}?key={key}',
+                'total':True,
+                'xpath':'entry/def/dt',
+                'func':dt_parser}
+
+        self._thes = {'cmd':'thes',
+                'key':self.bot.config.get('wordsapi', 'thes_apikey'),
+                'url':'http://www.dictionaryapi.com/api/v1/references/thesaurus/xml/{word}?key={key}',
+                'total':True,
+                'xpath':'entry/sens',
+                'func':dt_parser}
+
+        self._urband = {'cmd':'urband',
+                'key':self.bot.config.get('wordsapi', 'urband_apikey'),
+                'url':'https://mashape-community-urban-dictionary.p.mashape.com/define?term={word}',
+                'total':True,
+                'func':urband_parser}
+
+        self._rhyme = {'cmd':'rhyme',
+                'key':True,
+                'url':'http://rhymebrain.com/talk?function=getRhymes&word={word}',
+                'score':300,
+                'total':False,
+                'func':rhyme_parser}
+        print '####################################################################'
+        print self._mdict['key']
+        self._apiservices = [self._mdict, self._thes, self._urband, self._rhyme]
+
 
     @hook
     def privmsg_command(self, msg):
@@ -33,7 +63,7 @@ class Plugin(BasePlugin):
             return
 
 
-        for api in apiservices:
+        for api in self._apiservices:
             if g.group('cmd') == api['cmd']:
                 self._api = api
                 self._api['word'] = g.group('word').rstrip(' ')
@@ -87,6 +117,7 @@ def dt_parser(api):
     rets = []
     try:
         url = api['url'].format(key=api['key'], word=api['word'])
+        print'%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n',  url
         r = requests.get(url)
 
         if r.status_code not in [200, 301, 304]:
@@ -143,31 +174,4 @@ def rhyme_parser(api):
 
         return [' '.join(rets)]
 
-mdict = {'cmd':'define',
-        'key':config.dict_apikey,
-        'url':'http://www.dictionaryapi.com/api/v1/references/collegiate/xml/{word}?key={key}',
-        'total':True,
-        'xpath':'entry/def/dt',
-        'func':dt_parser}
 
-thes = {'cmd':'thes',
-        'key':config.thes_apikey,
-        'url':'http://www.dictionaryapi.com/api/v1/references/thesaurus/xml/{word}?key={key}',
-        'total':True,
-        'xpath':'entry/sens',
-        'func':dt_parser}
-
-urband = {'cmd':'urband',
-        'key':config.urband_apikey,
-        'url':'https://mashape-community-urban-dictionary.p.mashape.com/define?term={word}',
-        'total':True,
-        'func':urband_parser}
-
-rhyme = {'cmd':'rhyme',
-        'key':True,
-        'url':'http://rhymebrain.com/talk?function=getRhymes&word={word}',
-        'score':300,
-        'total':False,
-        'func':rhyme_parser}
-
-apiservices = [mdict, thes, urband, rhyme]

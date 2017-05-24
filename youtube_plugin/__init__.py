@@ -30,7 +30,7 @@ class Plugin(BasePlugin):
             return
 
         try:
-            url = data_url % (vid, self.bot.config['youtube']['apikey'])
+            url = data_url % (vid, self.bot.config.get('youtube', 'apikey'))
             r = requests.get(url)
 
             if r.status_code not in [200, 301, 304]:

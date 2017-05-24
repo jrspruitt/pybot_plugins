@@ -2,6 +2,7 @@
 # vim: set ts=4 et
 
 import re
+import sys
 import random
 import requests
 import tweepy
@@ -143,18 +144,19 @@ class Url(object):
 
 class Plugin(BasePlugin):
     def on_load(self, reloading):
-        apik = self.bot.config[self.name]['apikey']
-        apis = self.bot.config[self.name]['secret']
-        autht = self.bot.config[self.name]['auth_t']
-        authts = self.bot.config[self.name]['auth_ts']
-        
+
+        apik = self.bot.config.get(self.name, 'apikey')
+        apis = self.bot.config.get(self.name, 'secret')
+        autht = self.bot.config.get(self.name, 'auth_t')
+        authts = self.bot.config.get(self.name, 'auth_ts')
+
         auth = tweepy.OAuthHandler(apik, apis)
         auth.set_access_token(autht, authts)
         api = tweepy.API(auth)
         self._mods = [User(api), Url(api), Search(api)] #, Post(api)]
 
-    @hook
-    def privmsg_command(self, msg):
+    @hook('twitter.com')
+    def twitter_url(self, msg):
         if not msg.channel:
             return
 

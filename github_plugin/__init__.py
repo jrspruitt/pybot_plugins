@@ -21,8 +21,9 @@ def get_json(url, user, repo):
 
 
 class Plugin(BasePlugin):
-    @hook
-    def privmsg_command(self, msg):
+    @hook('www.github.com')
+    @hook('github.com')
+    def github_url(self, msg, domain, url):
         if not msg.channel:
             return
 

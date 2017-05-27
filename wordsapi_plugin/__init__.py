@@ -42,8 +42,6 @@ class Plugin(BasePlugin):
                 'score':300,
                 'total':False,
                 'func':rhyme_parser}
-        print '####################################################################'
-        print self._mdict['key']
         self._apiservices = [self._mdict, self._thes, self._urband, self._rhyme]
 
 
@@ -117,7 +115,6 @@ def dt_parser(api):
     rets = []
     try:
         url = api['url'].format(key=api['key'], word=api['word'])
-        print'%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n',  url
         r = requests.get(url)
 
         if r.status_code not in [200, 301, 304]:

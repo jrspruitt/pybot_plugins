@@ -168,3 +168,5 @@ class Plugin(BasePlugin):
         for m in self._mods:
             if m.match(text):
                 m.process(text, msg)
+
+        return True

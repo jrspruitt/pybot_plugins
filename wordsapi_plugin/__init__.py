@@ -46,12 +46,12 @@ class Plugin(BasePlugin):
 
 
     @hook
-    def privmsg_command(self, msg):
+    def words_trigger(self, msg, args, argstr):
         if not msg.channel:
             return
-        text = msg.param[-1]
+        text = argstr
 
-        if text.startswith('wordsapi help'):
+        if text.startswith('help'):
             msg.reply('Usage: <define|thes|urband|rhyme> [index], Returns definition, thesaurus, urband dictionary definition, or rhymed words.')
             return
 
@@ -120,11 +120,11 @@ def dt_parser(api):
         if r.status_code not in [200, 301, 304]:
             return None
 
-        if not r.content:
+        if not r.text:
             return None
         else:
-            reps = '<sx>|</sx>|<it>|</it>|<un>|</un>|<vi>|</vi>'
-            text = re.sub(reps, '', r.content)
+            reps = b'<sx>|</sx>|<it>|</it>|<un>|</un>|<vi>|</vi>'
+            text = re.sub(reps, b'', r.content)
             root = etree.fromstring(text)
 
             for x in root.iterfind(api['xpath']):

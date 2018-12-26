@@ -52,7 +52,7 @@ class Plugin(BasePlugin):
         text = argstr
 
         if text.startswith('help'):
-            msg.reply('Usage: <define|thes|urband|rhyme> [index], Returns definition, thesaurus, urband dictionary definition, or rhymed words.')
+            msg.reply('Usage: !words <define|thes|urband|rhyme> [index], Returns definition, thesaurus, urband dictionary definition, or rhymed words.')
             return
 
         g = re.search(pattern, text)
